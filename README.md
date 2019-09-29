@@ -16,6 +16,9 @@ where:
 * STACK: the name of the stack
 * OUTPUT_NAME: The name of the output variable to return
 
+Both the `--profile` and `--region` flags can be omitted if you have the
+appropriate AWS env vars setup.  See `--help` for details.
+
 ## License
 
 [MIT](LICENSE)
