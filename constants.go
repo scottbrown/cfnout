@@ -7,4 +7,4 @@ const AppName string = "cfnout"
 const AppCopyright string = "(c) 2019 Scott Brown"
 
 // Latest version of the application
-const AppVersion string = "1.0.0"
+const AppVersion string = "1.0.2"
