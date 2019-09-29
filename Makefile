@@ -10,13 +10,17 @@ dist.dir  := $(pwd)/.dist
 linux.bin   := cfnout
 windows.bin := cfnout.exe
 
-build.windows.file    := $(build.dir)/windows/$(windows.bin)
-build.linux.file      := $(build.dir)/linux/$(linux.bin)
-build.darwin.file     := $(build.dir)/darwin/$(linux.bin)
+build.windows.file  := $(build.dir)/windows/$(windows.bin)
+build.linux.dir     := $(build.dir)/linux
+build.linux.file    := $(build.linux.dir)/$(linux.bin)
+build.darwin.dir    := $(build.dir)/darwin
+build.darwin.file   := $(build.darwin.dir)/$(linux.bin)
 
 dist.windows.filename := $(pkg)-$(VERSION)-windows-amd64.zip
-dist.linux.filename   := $(pkg)-$(VERSION)-linux-amd64.zip
-dist.darwin.filename  := $(pkg)-$(VERSION)-darwin-amd64.zip
+dist.linux.filename   := $(pkg)-$(VERSION)-linux-amd64.tar.gz
+dist.linux.file       := $(dist.dir)/$(dist.linux.filename)
+dist.darwin.filename  := $(pkg)-$(VERSION)-darwin-amd64.tar.gz
+dist.darwin.file      := $(dist.dir)/$(dist.darwin.filename)
 
 .PHONY: build
 build: build-linux build-windows build-darwin
@@ -52,12 +56,12 @@ dist-windows: _get-version
 .PHONY: dist-linux
 dist-linux: _get-version
 	@mkdir -p $(dist.dir)
-	cd $(dist.dir) && zip $(dist.linux.filename) $(build.linux.file)
+	tar cfz $(dist.linux.file) -C $(build.linux.dir) $(linux.bin)
 
 .PHONY: dist-darwin
 dist-darwin: _get-version
 	@mkdir -p $(dist.dir)
-	cd $(dist.dir) && zip $(dist.darwin.filename) $(build.darwin.file)
+	tar cfz $(dist.darwin.file) -C $(build.darwin.dir) $(linux.bin)
 
 .PHONY: _get-version
 _get-version:
