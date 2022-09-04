@@ -25,6 +25,10 @@ dist.darwin.file      := $(dist.dir)/$(dist.darwin.filename)
 .PHONY: build
 build: build-linux build-windows build-darwin
 
+.PHONY: test
+test:
+	go test ./...
+
 .PHONY: format
 format:
 	go fmt ./...
