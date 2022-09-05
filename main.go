@@ -8,8 +8,9 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/aws/external"
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
+	cfntypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	"github.com/urfave/cli"
 )
 
@@ -72,23 +73,23 @@ func argsToNameMap(c *cli.Context) map[string]struct{} {
 }
 
 // Returns the stack by its name that was given in the environment
-func stack() (cloudformation.Stack, error) {
-	config, err := external.LoadDefaultAWSConfig(
-		external.WithSharedConfigProfile(env.AWSProfile),
-		external.WithRegion(env.AWSRegion),
+func stack() (cfntypes.Stack, error) {
+	config, err := config.LoadDefaultConfig(
+    context.TODO(),
+		config.WithSharedConfigProfile(env.AWSProfile),
+		config.WithRegion(env.AWSRegion),
 	)
 
-	client := cloudformation.New(config)
+	client := cloudformation.NewFromConfig(config)
 
 	input := cloudformation.DescribeStacksInput{
 		StackName: aws.String(env.StackName),
 	}
 
-	req := client.DescribeStacksRequest(&input)
-	res, err := req.Send(context.TODO())
-	if err != nil {
-		return cloudformation.Stack{}, err
-	}
+	res, err := client.DescribeStacks(context.TODO(), &input)
+  if err != nil {
+		return cfntypes.Stack{}, err
+  }
 
 	return res.Stacks[0], nil
 }
