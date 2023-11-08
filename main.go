@@ -75,7 +75,7 @@ func argsToNameMap(c *cli.Context) map[string]struct{} {
 // Returns the stack by its name that was given in the environment
 func stack() (cfntypes.Stack, error) {
 	config, err := config.LoadDefaultConfig(
-    context.TODO(),
+		context.TODO(),
 		config.WithSharedConfigProfile(env.AWSProfile),
 		config.WithRegion(env.AWSRegion),
 	)
@@ -87,9 +87,9 @@ func stack() (cfntypes.Stack, error) {
 	}
 
 	res, err := client.DescribeStacks(context.TODO(), &input)
-  if err != nil {
+	if err != nil {
 		return cfntypes.Stack{}, err
-  }
+	}
 
 	return res.Stacks[0], nil
 }
