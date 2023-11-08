@@ -3,6 +3,7 @@
 pwd := $(shell pwd)
 
 pkg := cfnout
+repo := github.com/scottbrown/$(pkg)
 
 build.dir := $(pwd)/.build
 dist.dir  := $(pwd)/.dist
@@ -38,15 +39,15 @@ dist: dist-linux dist-windows dist-darwin
 
 .PHONY: build-windows
 build-windows:
-	GOOS=windows GOARCH=amd64 go build -o $(build.windows.file) $(pkg)
+	GOOS=windows GOARCH=amd64 go build -o $(build.windows.file) $(repo)
 
 .PHONY: build-linux
 build-linux:
-	GOOS=linux GOARCH=amd64 go build -o $(build.linux.file) $(pkg)
+	GOOS=linux GOARCH=amd64 go build -o $(build.linux.file) $(repo)
 
 .PHONY: build-darwin
 build-darwin:
-	GOOS=darwin GOARCH=amd64 go build -o $(build.darwin.file) $(pkg)
+	GOOS=darwin GOARCH=amd64 go build -o $(build.darwin.file) $(repo)
 
 .PHONY: clean
 clean:
