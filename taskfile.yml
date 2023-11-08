@@ -1,0 +1,142 @@
+---
+version: 3
+
+vars:
+  pwd:
+    sh: pwd
+  pkg: cfnout
+  repo: "github.com/scottbrown/{{ .pkg }}"
+
+  BUILD_DIR: "{{ .pwd }}/.build"
+  BUILD_WINDOWS_DIR: "{{ .BUILD_DIR }}/windows"
+  BUILD_WINDOWS_FILE: "{{ .BUILD_WINDOWS_DIR }}/{{ .pkg }}.exe"
+  BUILD_LINUX_DIR: "{{ .BUILD_DIR }}/linux"
+  BUILD_LINUX_FILE: "{{ .BUILD_LINUX_DIR }}/{{ .pkg }}"
+  BUILD_DARWIN_DIR: "{{ .BUILD_DIR }}/darwin"
+  BUILD_DARWIN_FILE: "{{ .BUILD_DARWIN_DIR }}/{{ .pkg }}"
+
+  DIST_DIR: "{{ .pwd }}/.dist"
+
+tasks:
+  build:
+    desc: "Builds artifacts for all OSes/arches"
+    deps: [build-windows, build-linux, build-darwin]
+
+  test:
+    desc: "Runs unit tests"
+    cmds:
+      - go test ./...
+
+  format:
+    desc: "Formats the code"
+    cmds:
+      - go fmt ./...
+
+  dist:
+    desc: "Builds a distributable artifact"
+    deps: [dist-windows, dist-linux, dist-darwin]
+    requires:
+      vars:
+        - VERSION
+
+  build-windows:
+    desc: "Builds a windows artifact"
+    deps: [ build-deps ]
+    cmds:
+      - GOOS=$GOOS GOARCH=$GOARCH go build -o {{ .BUILD_WINDOWS_FILE }} {{ .repo }}
+    env:
+      GOOS: windows
+      GOARCH: amd64
+    requires:
+      vars:
+        - BUILD_WINDOWS_FILE
+        - repo
+
+  build-linux:
+    desc: "Builds a linux artifact"
+    deps: [ build-deps ]
+    cmds:
+      - GOOS=$GOOS GOARCH=$GOARCH go build -o {{ .BUILD_LINUX_FILE }} {{ .repo }}
+    env:
+      GOOS: linux
+      GOARCH: amd64
+    requires:
+      vars:
+        - BUILD_LINUX_FILE
+        - repo
+
+  build-darwin:
+    desc: "Builds a MacOS artifact"
+    deps: [ build-deps ]
+    cmds:
+      - GOOS=$GOOS GOARCH=$GOARCH go build -o {{ .BUILD_DARWIN_FILE }} {{ .repo }}
+    env:
+      GOOS: darwin
+      GOARCH: amd64
+    requires:
+      vars:
+        - BUILD_DARWIN_FILE
+        - repo
+
+  dist-windows:
+    desc: "Builds a distributable windows artifact"
+    deps: [ build-deps ]
+    cmds:
+      - mkdir -p {{ .DIST_DIR }}
+      - cd {{ .DIST_DIR }} && zip {{ .DIST_WINDOWS_FILENAME }} {{ .BUILD_WINDOWS_FILE }}
+    requires:
+      vars:
+        - DIST_DIR
+        - BUILD_WINDOWS_FILE
+        - VERSION
+    vars:
+      DIST_WINDOWS_FILENAME: "{{ .pkg }}-v{{ .VERSION }}-windows-amd64.zip"
+      DIST_WINDOWS_FILE: "{{ .DIST_DIR }}/{{ .DIST_WINDOWS_FILENAME }}"
+
+  dist-linux:
+    desc: "Builds a distributable linux artifact"
+    deps: [ build-deps ]
+    cmds:
+      - mkdir -p {{ .DIST_DIR }}
+      - cd {{ .DIST_DIR }} && zip {{ .DIST_LINUX_FILENAME }} {{ .BUILD_LINUX_FILE }}
+    requires:
+      vars:
+        - DIST_DIR
+        - BUILD_LINUX_FILE
+        - VERSION
+    vars:
+      DIST_LINUX_FILENAME: "{{ .pkg }}-v{{ .VERSION }}-linux-amd64.zip"
+      DIST_LINUX_FILE: "{{ .DIST_DIR }}/{{ .DIST_LINUX_FILENAME }}"
+
+  dist-darwin:
+    desc: "Builds a distributable MacOS artifact"
+    deps: [ build-deps ]
+    cmds:
+      - mkdir -p {{ .DIST_DIR }}
+      - cd {{ .DIST_DIR }} && zip {{ .DIST_DARWIN_FILENAME }} {{ .BUILD_DARWIN_FILE }}
+    requires:
+      vars:
+        - DIST_DIR
+        - BUILD_DARWIN_FILE
+        - VERSION
+    vars:
+      DIST_DARWIN_FILENAME: "{{ .pkg }}-v{{ .VERSION }}-darwin-amd64.zip"
+      DIST_DARWIN_FILE: "{{ .DIST_DIR }}/{{ .DIST_DARWIN_FILENAME }}"
+
+  build-deps:
+    cmds:
+      - mkdir -p {{ .BUILD_DIR }}
+      - mkdir -p {{ .DIST_DIR }}
+    generates:
+      - "{{ .BUILD_DIR }}"
+      - "{{ .DIST_DIR }}"
+    internal: true
+
+  clean:
+    desc: "Removes all derived files"
+    cmds:
+      - rm -rf {{ .BUILD_DIR }} {{ .DIST_DIR }}
+    requires:
+      vars:
+        - BUILD_DIR
+        - DIST_DIR
