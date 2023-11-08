@@ -1,4 +1,4 @@
-module cfnout
+module github.com/scottbrown/cfnout
 
 go 1.13
 
