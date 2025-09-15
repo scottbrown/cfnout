@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/aws/aws-sdk-go-v2 v1.39.0
 	github.com/aws/aws-sdk-go-v2/config v1.31.7
-	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.66.0
+	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.66.2
 	github.com/urfave/cli v1.22.17
 )
 
