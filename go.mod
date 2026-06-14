@@ -3,7 +3,7 @@ module github.com/scottbrown/cfnout
 go 1.24
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.41.12
+	github.com/aws/aws-sdk-go-v2 v1.42.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.20
 	github.com/aws/aws-sdk-go-v2/service/cloudformation v1.72.0
 	github.com/urfave/cli v1.22.17
